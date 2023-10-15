@@ -1,12 +1,15 @@
 import tensorflow as tf
-from tensorflow import keras
 from keras import layers
 
 import matplotlib.pyplot as plt
 
 import numpy as np
+from numpy import mean
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
+
+# Definir a seed, para os resultados serem consitentes
+tf.keras.utils.set_random_seed(7)
 
 # Utilizar os datasets builtin do tensorflow - facilita a preparacao dos dados
 mnist = tf.keras.datasets.mnist
@@ -44,9 +47,13 @@ fig.suptitle('Dataset samples', fontsize=16)
 plt.show()
 
 # Desenvolver a partir daqui!
+
+# Criar a CNN
 model = tf.keras.models.Sequential([
     layers.Flatten(input_shape=(28, 28)),
-    layers.Dense(26, activation='sigmoid'),
+    layers.Dense(560, activation='relu'),
+    layers.Dropout(0.5),
+    layers.Dense(140, activation='relu'),
     layers.Dense(10, activation='softmax')
 ])
 
@@ -54,12 +61,13 @@ model = tf.keras.models.Sequential([
 model.summary()
 
 # compilar o modelo, definindo a loss function e o algoritmo de optimizacao
+# legacy.Adam para poder correr eficientemente em Apple M1/M2
 model.compile(loss=tf.losses.CategoricalCrossentropy(),
-              optimizer=tf.optimizers.Adam(learning_rate=0.001),
+              optimizer=tf.keras.optimizers.legacy.Adam(learning_rate=0.001),
               metrics=['accuracy'])
 
-# treinar, guardaando os dados do treino na variavel history
-history = model.fit(x_train, y_train, batch_size=100, epochs=100, validation_data=(x_test, y_test))
+# treinar, guardando os dados do treino na variavel history
+history = model.fit(x_train, y_train, batch_size=56, epochs=30, validation_data=(x_test, y_test))
 
 # obter os id's das classes verdadeiras
 y_true = np.argmax(y_test, axis=1)
@@ -72,7 +80,6 @@ y_pred = np.argmax(output_pred, axis=1)
 cm = confusion_matrix(y_true, y_pred)
 
 # mostrar figuras - accuracy, loss e matriz de confusao
-# pode dar avisos de deprecated no pycharm pro - nao ligar a isso
 plt.figure(num=1)
 plt.plot(history.history['accuracy'])
 plt.plot(history.history['val_accuracy'])
@@ -94,3 +101,9 @@ plt.grid(True, ls='--')
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
 disp.plot(cmap=plt.cm.Blues)
 plt.show()
+
+# Dar print da melhor accuracy para os dados de teste
+best_val_accuracy = max(history.history['val_accuracy'])
+mean_val_accuracy = mean(history.history['val_accuracy'])
+print(f"Best test accuracy: {best_val_accuracy}")
+print(f"Mean test accuracy: {mean_val_accuracy}")
