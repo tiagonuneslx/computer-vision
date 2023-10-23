@@ -1,14 +1,35 @@
+import os
+import sys
 import tensorflow as tf
 from keras import layers
 from matplotlib import pyplot as plt
 from numpy import mean
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 
-# Definir a seed, para os resultados serem consitentes
+#
+#  Instructions
+#
+# This script takes the path of a directory with labeled images of cats and dogs and
+# creates a CNN model to classify images of cats/dogs.
+#
+# Inside the directory taken as input there should be the following:
+#  <directory>/train/cat/         - with images of cats used for training
+#  <directory>/train/dog/         - with images of dogs used for training
+#  <directory>/validation/cat/    - with images of cats used for testing
+#  <directory>/validation/dog/    - with images of dogs used for testing
+#
+
+# Definir a seed, para os resultados serem consistentes
 tf.keras.utils.set_random_seed(7)
 
-TRAIN_PATH = "resources/cats_and_dogs/train"
-TEST_PATH = "resources/cats_and_dogs/validation"
+path = input("Enter the path to the images directory: ")
+
+train_path = os.path.join(path, "train")
+validation_path = os.path.join(path, "validation")
+
+if not os.path.isdir(path) or not os.path.isdir(train_path) or not os.path.isdir(validation_path):
+    sys.exit(f"The directory doesn't exist or it doesn't have the expected structure: {path}.\n"
+             f"Please take a look at the instructions comments at the top of the script.")
 
 BATCH_SIZE = 50
 IMG_HEIGHT = 100
@@ -16,7 +37,7 @@ IMG_WIDTH = 100
 EPOCHS = 25
 
 train_ds = tf.keras.utils.image_dataset_from_directory(
-    TRAIN_PATH,
+    train_path,
     color_mode='rgb',
     labels='inferred',
     label_mode='categorical',
@@ -25,7 +46,7 @@ train_ds = tf.keras.utils.image_dataset_from_directory(
 )
 
 test_ds = tf.keras.utils.image_dataset_from_directory(
-    TEST_PATH,
+    validation_path,
     color_mode='rgb',
     labels='inferred',
     label_mode='categorical',
@@ -114,5 +135,5 @@ plt.show()
 # Dar print da melhor accuracy para os dados de teste
 best_val_accuracy = max(history.history['val_accuracy'])
 mean_val_accuracy = mean(history.history['val_accuracy'])
-print(f"Melhor taxa de acertos: {(best_val_accuracy*100):.2f}%")
-print(f"Média taxa de acertos: {(mean_val_accuracy*100):.2f}%")
+print(f"Melhor taxa de acertos: {(best_val_accuracy * 100):.2f}%")
+print(f"Média taxa de acertos: {(mean_val_accuracy * 100):.2f}%")
