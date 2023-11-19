@@ -1,10 +1,13 @@
+import json
+
 import cv2
 import os
 
 MODEL_FILE = "resources/config/frozen_inference_graph.pb"
 CONFIG_FILE = "resources/config/ssd_mobilenet_v2_coco_2018_03_29.pbtxt.txt"
 DUCKS_DIR = "resources/ducks"
-CONFIDENCE_THRESHOLD = .5
+GROUND_TRUTH_FILE = "resources/ground_truth_bboxes.json"
+CONFIDENCE_THRESHOLD = .2
 IOU_THRESHOLD = .5
 
 
@@ -12,7 +15,6 @@ IOU_THRESHOLD = .5
 def get_metrics(ground_truth_bboxes, bboxes, confidence_scores):
     true_positives = 0
     false_positives = 0
-    false_negatives = 0
 
     total_predictions = len(bboxes)
     total_ground_truths = len(ground_truth_bboxes)
@@ -106,7 +108,19 @@ for fileName in fileNames:
     SSDmodel.setInput(blob)
     output = SSDmodel.forward()
 
-    ground_truth_bboxes = [(156, 81, 448, 432), (479, 86, 417, 392)]
+    # ler os ground truth bounding boxes a partir do ficheiro JSON de anotações, obtido através do
+    # VGG Image Annotator (VIA)
+    with open(GROUND_TRUTH_FILE) as ground_truth_file:
+        ground_truth_data = json.load(ground_truth_file)
+        ground_truth_img_metadata = \
+            [value for key, value in ground_truth_data["_via_img_metadata"].items() if value["filename"] == fileName][0]
+        ground_truth_bboxes = list(map(lambda it: (
+            it["shape_attributes"]["x"],
+            it["shape_attributes"]["y"],
+            it["shape_attributes"]["width"],
+            it["shape_attributes"]["height"],
+        ), ground_truth_img_metadata["regions"]))
+
     bboxes = []
     confidence_scores = []
 
@@ -143,13 +157,14 @@ for fileName in fileNames:
     recalls.append(recall)
     mean_ious.append(mean_iou)
 
-    print(f"{fileName:^10} | {f'{precision*100:.2f}%':^10} | {f'{recall*100:.2f}%':^10} | {f'{mean_iou*100:.2f}%':^10}")
+    print(
+        f"{fileName:^10} | {f'{precision * 100:.2f}%':^10} | {f'{recall * 100:.2f}%':^10} | {f'{mean_iou * 100:.2f}%':^10}")
 
     # show image with bounding boxes
-    cv2.imshow('output', img)
+    cv2.imshow(fileName, img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 print(f"\n{'Average of Precisions (not AP):':35s} {sum(precisions) / len(precisions) * 100:.2f}%")
-print(f"{'Average of Recalls: ':35s} {sum(recalls) / len(recalls):.2f}%")
-print(f"{'Average of Mean IoUs: ':35s} {sum(mean_ious) / len(mean_ious):.2f}%")
+print(f"{'Average of Recalls: ':35s} {sum(recalls) / len(recalls) * 100:.2f}%")
+print(f"{'Average of Mean IoUs: ':35s} {sum(mean_ious) / len(mean_ious) * 100:.2f}%")

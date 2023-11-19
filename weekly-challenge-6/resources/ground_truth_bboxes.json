@@ -253,6 +253,16 @@
         {
           "shape_attributes": {
             "name": "rect",
+            "x": 0,
+            "y": 0,
+            "width": 156,
+            "height": 44
+          },
+          "region_attributes": {}
+        },
+        {
+          "shape_attributes": {
+            "name": "rect",
             "x": 111,
             "y": 101,
             "width": 101,
