@@ -12,7 +12,7 @@ IOU_THRESHOLD = .5
 
 
 # obter precision e recall
-def get_metrics(ground_truth_bboxes, bboxes, confidence_scores):
+def get_metrics(ground_truth_bboxes, bboxes):
     true_positives = 0
     false_positives = 0
 
@@ -22,7 +22,6 @@ def get_metrics(ground_truth_bboxes, bboxes, confidence_scores):
     best_ious = []
 
     for i, bbox in enumerate(bboxes):
-        confidence = confidence_scores[i]
 
         # obter o melhor IoU
         best_iou = 0.0
@@ -152,7 +151,7 @@ for fileName in fileNames:
     for ground_truth_bbox in ground_truth_bboxes:
         cv2.rectangle(img, ground_truth_bbox, blue, thickness=2)
 
-    precision, recall, mean_iou = get_metrics(ground_truth_bboxes, bboxes, confidence_scores)
+    precision, recall, mean_iou = get_metrics(ground_truth_bboxes, bboxes)
     precisions.append(precision)
     recalls.append(recall)
     mean_ious.append(mean_iou)
