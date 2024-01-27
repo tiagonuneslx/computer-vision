@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-model = cv2.dnn.readNetFromTensorflow("graph_optimized.pb")
+model = cv2.dnn.readNetFromONNX("model.onnx")
 
 img = cv2.imread("resources/test/img.jpg")
 
