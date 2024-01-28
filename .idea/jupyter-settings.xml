@@ -6,7 +6,6 @@
         <entry key="$PROJECT_DIR$/.idea/computer-vision.iml">
           <value>
             <JupyterConnectionParameters>
-              <option name="argv" value="notebook --no-browser --ServerApp.iopub_msg_rate_limit=10000" />
               <option name="managed" value="true" />
               <option name="sdkName" value="" />
             </JupyterConnectionParameters>
