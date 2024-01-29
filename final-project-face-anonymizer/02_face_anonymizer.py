@@ -114,6 +114,11 @@ for i, image_file in enumerate(image_files):
         if isTestMode:
             cv2.rectangle(image, start, end, color=red, thickness=2)
 
+        if isTestMode:
+            cv2.imshow(image_file, image)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+
         box = (np.rint(box)).astype(int)
 
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
