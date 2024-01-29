@@ -106,12 +106,11 @@ for i, image_file in enumerate(image_files):
         box[2] = box[2] * (img_width / 640)
         box[3] = box[3] * (img_height / 640)
 
-        scale_factor = .1  # x1.2
-
-        box[0] = max(0, box[0] - w * scale_factor)
-        box[1] = max(0, box[1] - h * scale_factor)
-        box[2] = min(img_width, box[2] + w * scale_factor)
-        box[3] = min(img_height, box[3] + h * scale_factor)
+        # scale_factor = .1  # x1.2
+        # box[0] = max(0, box[0] - w * scale_factor)
+        # box[1] = max(0, box[1] - h * scale_factor)
+        # box[2] = min(img_width, box[2] + w * scale_factor)
+        # box[3] = min(img_height, box[3] + h * scale_factor)
 
         start = (box[0], box[1])
         end = (box[2], box[3])
