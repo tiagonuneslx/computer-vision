@@ -36,7 +36,6 @@ def visualize_detections(model, images, bounding_box_format):
         images,
         value_range=(0, 255),
         bounding_box_format=bounding_box_format,
-        # y_true=bounding_boxes,
         y_pred=y_pred,
         scale=4,
         rows=2,
@@ -55,7 +54,6 @@ def load_image(image_path):
     """
     image = tf.io.read_file(image_path)
     image = tf.image.decode_jpeg(image, channels=3)
-    # image = tf.image.resize_with_pad(image,640,640,method=ResizeMethod.BILINEAR)
     image = tf.image.resize(image, (640, 640), method=ResizeMethod.BILINEAR)
     return image
 
@@ -100,12 +98,6 @@ for i, image_file in enumerate(image_files):
         box[1] = box[1] * (img_height / 640)
         box[2] = box[2] * (img_width / 640)
         box[3] = box[3] * (img_height / 640)
-
-        # scale_factor = .1  # x1.2
-        # box[0] = max(0, box[0] - w * scale_factor)
-        # box[1] = max(0, box[1] - h * scale_factor)
-        # box[2] = min(img_width, box[2] + w * scale_factor)
-        # box[3] = min(img_height, box[3] + h * scale_factor)
 
         start = (box[0], box[1])
         end = (box[2], box[3])
@@ -152,11 +144,6 @@ for i, image_file in enumerate(image_files):
             cv2.imshow(image_file, mask)
             cv2.waitKey(0)
             cv2.destroyAllWindows()
-
-        # mask = 255 - mask
-
-        # mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
-        # image = cv2.bitwise_and(image, image, mask=mask)
 
         blur = cv2.blur(image, (15, 25), 0)
         image[mask > 0] = blur[mask > 0]
